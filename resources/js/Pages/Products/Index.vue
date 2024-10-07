@@ -7,6 +7,7 @@ import Pagination from "@/Pages/Misc/Pagination.vue";
 import ProductForm from "@/Pages/Products/ProductForm.vue";
 import DeleteItem from "@/Pages/Misc/DeleteItem.vue";
 import ApplicationLogo from "@/Components/ApplicationLogo.vue";
+import FlashMessage from "@/Pages/Misc/FlashMessage.vue";
 
 const { products } = defineProps({
     products: {
@@ -64,7 +65,14 @@ const isShowProductModal = ref(false);
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100">
-                        <div class="">
+                        <FlashMessage
+                            class="py-2"
+                            v-if="$page.props.flash?.title"
+                            :title="$page.props.flash.title"
+                            :message="$page.props.flash.message"
+                            :type="$page.props.flash.type"
+                            />
+                        <div class="mt-2">
                             <div class="flex justify-between items-center mb-6">
                                 <h1 class="text-3xl font-semibold text-gray-900 dark:text-white">Product List</h1>
                                 <button @click="isShowProductModal = true" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-900">
@@ -119,11 +127,26 @@ const isShowProductModal = ref(false);
                                             </td>
 
                                             <td class="px-6 py-4 whitespace-nowrap">
-                                                <Link :href="route('gateways.index', product.id )"
-                                                class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300"
-                                                >
-                                                    Complete Payment
-                                                </Link>
+                                                <div v-if="product.payment?.status === 'success'" class="flex items-center space-x-2">
+        <span class="px-3 py-1 inline-flex text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-400 dark:text-green-900">
+            Paid
+        </span>
+                                                    <Link
+                                                        :href="route('gateways.verify', product.id)"
+                                                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-gray-700 bg-yellow-100 rounded-md shadow-sm hover:bg-yellow-200 dark:bg-yellow-600 dark:text-white dark:hover:bg-yellow-500"
+                                                    >
+                                                        Verify Payment
+                                                    </Link>
+                                                </div>
+
+                                                <div v-else class="flex items-center justify-start">
+                                                    <Link
+                                                        :href="route('gateways.index', product.id)"
+                                                        class="inline-flex items-center px-3 py-1 text-sm font-medium text-white bg-indigo-600 rounded-md shadow-sm hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400"
+                                                    >
+                                                        Complete Payment
+                                                    </Link>
+                                                </div>
                                             </td>
 
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

@@ -1,8 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {Head, Link, usePage} from '@inertiajs/vue3';
+import {ref} from "vue";
+import CancelAuthorization from "@/Pages/Gateways/CancelAuthorization.vue";
+import FlashMessage from "@/Pages/Misc/FlashMessage.vue";
 
 const gateway = usePage().props.gateway;
+
+const cancelAccountId = ref(null);
+const isCancelAccountModalShow = ref(false);
+const cancelAccount = ref(null);
+
+const cancelAuthorization = (account) => {
+    cancelAccount.value = account;
+    isCancelAccountModalShow.value = true;
+};
+
 </script>
 
 <template>
@@ -23,6 +36,14 @@ const gateway = usePage().props.gateway;
                     class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800"
                 >
                     <div class="p-6 text-gray-900 dark:text-gray-100">
+                        <FlashMessage
+                            :class="$page.props.flash?.title ? 'mb-6' : ''"
+                            v-if="$page.props.flash?.title"
+                            :title="$page.props.flash.title"
+                            :message="$page.props.flash.message"
+                            :type="$page.props.flash.type"
+                        />
+
                         <div
                             v-if="$page.props.paymentAccounts.length > 0"
                             class="grid grid-cols-2 md:grid-cols-2 gap-6">
@@ -33,6 +54,7 @@ const gateway = usePage().props.gateway;
                                     <!-- Cancel Authorization link in the top-right corner -->
                                     <div class="absolute top-2 right-2">
                                         <button type="submit"
+                                                @click="cancelAuthorization(account)"
                                                 class="bg-red-100 text-red-500 text-xs font-semibold px-3 py-1 rounded-full hover:bg-red-200 transition duration-300 ease-in-out">
                                             Cancel Authorization
                                         </button>
@@ -43,10 +65,10 @@ const gateway = usePage().props.gateway;
                                              class="w-full h-24 object-contain mb-4">
                                         <div class="text-center">
                                             <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ account.account_no }}</h3>
-                                            <a href=""
-                                               class="bg-green-500 text-white font-semibold px-6 py-2 rounded hover:bg-green-600 transition-colors duration-300">
+                                            <Link :href="route('gateways.process', [$page.props.product.id, { gateway: $page.props.gateway.key, payment_account: account.id }])"
+                                                  class="bg-blue-700 text-white font-semibold px-4 py-1 rounded hover:bg-blue-600 transition">
                                                 Pay Now
-                                            </a>
+                                            </Link>
                                         </div>
                                     </div>
                                 </div>
@@ -59,10 +81,11 @@ const gateway = usePage().props.gateway;
                                     <div class="p-6 space-y-4">
                                         <div class="flex items-center justify-between">
                                             <h3 class="text-xl font-semibold text-gray-700">Just Pay for Now</h3>
-                                            <a href=""
+                                            <Link
+                                                :href="route('gateways.process', [$page.props.product.id, { gateway: $page.props.gateway.key, save: 'false' }])"
                                                class="bg-blue-500 text-white font-semibold px-6 py-2 rounded hover:bg-blue-600 transition">
                                                 Pay Now
-                                            </a>
+                                            </Link>
                                         </div>
 
                                         <hr class="border-gray-300">
@@ -73,7 +96,6 @@ const gateway = usePage().props.gateway;
                                                       class="bg-blue-700 text-white font-semibold px-4 py-1 rounded hover:bg-blue-600 transition">
                                                     Save
                                                 </Link>
-
                                             </div>
                                         </div>
                                     </div>
@@ -81,6 +103,13 @@ const gateway = usePage().props.gateway;
                             </div>
                         </div>
                     </div>
+
+                    <CancelAuthorization
+                        :show-modal="isCancelAccountModalShow"
+                        :item="cancelAccount"
+                        route-name="gateways.cancel-authorization"
+                        @close-modal="isCancelAccountModalShow = false"
+                        />
                 </div>
             </div>
         </div>

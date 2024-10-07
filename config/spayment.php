@@ -6,7 +6,9 @@ return [
     'gateways' => [
         'nagad' => [
             'sandbox_mode' => env('NAGAD_MODE', 'sandbox'),
-            'merchant_id' => env('NAGAD_MERCHANT_ID', '683002007104225'),
+            'merchant_id' => env('NAGAD_MERCHANT_ID', '123456778899'),
+            'merchant_public_key' => env('NAGAD_PG_PUBLIC_KEY', '123456778899'),
+            'merchant_private_key' => env('NAGAD_MERCHANT_PRIVATE_KEY', '123456778899'),
             'merchant_number' => env('NAGAD_MERCHANT_NUMBER', '1234567889'),
             'callback_url' => env('NAGAD_CALLBACK_URL', env('APP_URL').'/nagad/callback'),
             'tokenization' => env('NAGAD_TOKENIZATION', false),
